@@ -1,0 +1,5 @@
+boto3
+mrjob
+warcio
+simplejson
+https://github.com/commoncrawl/gzipstream/archive/master.zip

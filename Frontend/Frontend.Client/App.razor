@@ -1,0 +1,17 @@
+﻿<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <div class="w-full lg:max-w-3xl m-[auto]">
+                <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+                    role="alert">
+                    <span class="font-medium">Sorry, there's nothing at this address.</span>
+                    Change a few things up and try submitting again.
+                </div>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

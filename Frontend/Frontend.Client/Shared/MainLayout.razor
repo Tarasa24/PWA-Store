@@ -1,0 +1,64 @@
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavManager
+
+<nav class="flex gap-x-2 items-center lg:max-w-3xl lg:mx-[auto]">
+  <a href="/">
+    <img src="icon-192.png" alt="logo" class="w-28 p-2" />
+  </a>
+  <form action="/search" method="GET" class="mb-2 w-full">
+    <div class="flex">
+      <div class="relative w-full">
+        <input type="search" id="search-dropdown"
+          class="block p-2.5 w-full z-20 text-l text-gray-900 bg-gray-50 rounded-full border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Search for PWAs" required
+          name="s" value="@SearchText"
+        />
+        <button type="submit"
+          class="absolute top-0 right-0 p-2.5 text-l font-medium text-white bg-[#5A0FC8] rounded-r-full border border-[#5A0FC8] focus:ring-4 focus:outline-none focus:ring-blue-300">
+          <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <span class="sr-only">Search</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</nav>
+
+<div class="xl:max-w-[75%] m-[auto]">
+  @Body
+</div>
+
+@code
+{
+  public string SearchText { get; set; }
+  
+  protected override void OnInitialized()
+  {
+    NavManager.LocationChanged += LocationChanged;
+    SetSearchText();
+    StateHasChanged();
+  }
+
+  private void LocationChanged(object sender, LocationChangedEventArgs e)
+  {
+    SetSearchText();
+    StateHasChanged();
+  }
+
+  private void SetSearchText()
+  {
+    var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+    if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("s", out var _s))
+    {
+      SearchText = _s;
+    }
+    else
+    {
+      SearchText = null;
+    }
+  }
+}

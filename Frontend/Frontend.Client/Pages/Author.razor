@@ -1,0 +1,75 @@
+@page "/Author/{AuthorId}"
+@using AuthorDetails = Frontend.Shared.Models.AuthorDetails
+
+<PageTitle>@author.Name | Author</PageTitle>
+
+<main>
+  <section class="flex flex-col items-center">
+    <h1 class="text-3xl font-bold my-5">
+      @author.Name
+    </h1>
+    @if (author.RatingTotal > 0)
+    {
+      <div class="flex gap-x-10 items-center">
+        <div class="flex flex-col items-center">
+          <span class="text-xl">@String.Format("{0:0.00}", author.RatingAverage)</span>
+          <span>@(author.RatingTotal + " rating" + (author.RatingTotal > 1 ? "s" : ""))</span>
+        </div>
+        <div class="flex">
+          <Star Rating="author.RatingAverage" />
+        </div>
+      </div>
+    }
+  </section>
+  <section class="mt-5 grid grid-rows-3 xl:grid-flow-col xl:auto-cols-max xl:gap-x-20 xl:overflow-x-auto xl:snap-x xl:snap-mandatory">
+    @if (author.Apps != null)
+    {
+      @foreach (var app in author.Apps)
+      {
+        <a class="flex-none block mb-2 mr-6 flex snap-start truncate items-center" href="/AppDetail/@app.AppID">
+          <img class="flex-none rounded-lg w-16 object-scale-down" src="@app.IconURL" alt="PWA-OTD icon"
+            onerror="this.src='icon-54.png';">
+          <div class="flex-auto ml-2 truncate">
+            <span class="text-l font-bold text-gray-900">
+              @app.Name
+            </span>
+            <p class="text-xs text-gray-700 truncate" title="@app.Description">
+              @app.Description
+            </p>
+            @if (app.RatingAverage != null)
+            {
+              <span class="flex items-center">
+                <b class="text-s">@String.Format("{0:0.00}", app.RatingAverage)</b>
+                <Star Rating="1" MaxRating="1" />
+              </span>
+            }
+          </div>
+        </a>
+      }
+    }
+  </section>
+</main>
+
+@code {
+  [Parameter]
+  public string? AuthorId { get; set; }
+  public AuthorDetails? author { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    author = null;
+    await GetAuthor();
+  }
+  protected override async Task OnParametersSetAsync()
+  {
+    author = null;
+    StateHasChanged();
+    await GetAuthor();
+  }
+
+  private async Task GetAuthor()
+  {
+    author = await Http.GetFromJsonAsync<AuthorDetails>("/Author/" + AuthorId);
+    StateHasChanged();
+  }
+}

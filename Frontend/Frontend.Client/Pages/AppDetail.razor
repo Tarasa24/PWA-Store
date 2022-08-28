@@ -1,0 +1,274 @@
+@page "/AppDetail/{appId}"
+@using App = Frontend.Shared.Models.App
+@using static Frontend.Client.Shared.HelperFunctions
+@using System.Globalization
+
+@code
+{
+  [Parameter]
+  public string? AppId { get; set; }
+}
+
+<PageTitle>@app.Name | Detail</PageTitle>
+
+<main>
+  @if (app != null)
+  {
+    <section class="bg-[@app.ColorBg] text-[@ContrastColor(app.ColorBg)] xl:p-10 p-5">
+      <div class="flex items-center">
+        <img class="flex-none rounded-lg w-32 object-scale-down mr-5" src="@app.IconURL" alt="@app.Name Icon"
+          onerror="this.src='icon-54.png';" >
+        <div class="truncate">
+          <div class="flex items-center">
+            <h1 class="font-bold text-xl m-0">@app.Name</h1>
+            @if (LangToCountryCode(app.Lang) != null)
+            {
+              <img src="/flags/@(LangToCountryCode(app.Lang)).svg" class="inline-block rounded-l h-6 ml-2" alt="@app.Lang flag" title="@app.Lang" />
+            } else if (app.Lang != null)
+            {
+              <span class="inline-block h-6 ml-2">@app.Lang</span>
+            }
+          </div>
+          <p class="my-2 truncate">@app.Description</p>
+          <div>
+            <a href="@app.PageURL" referrerpolicy="origin-when-cross-origin">
+              <button class="text-[@ContrastColor(app.ColorTheme)] bg-[@app.ColorTheme] font-bold rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 border border-[@ContrastColor(app.ColorTheme)]">
+                VISIT
+              </button>
+            </a>
+            <span>@BytesToString(app.ByteSize)</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex xl:gap-x-20 gap-x-7 justify-center items-center mt-2">
+        @if (app.RatingTotal > 0)
+        {
+          <div class="flex xl:gap-x-10 gap-x-2 items-center">
+            <div class="flex flex-col items-center">
+              <span class="xl:text-xl">@String.Format("{0:0.00}", app.RatingAverage)</span>
+              <span class="xl:text-m text-s">@(app.RatingTotal + " rating" + (app.RatingTotal > 1 ? "s" : ""))</span>
+            </div>
+            <div class="flex">
+              <Star ColorActive="@ContrastColor(app.ColorBg)" Rating="app.RatingAverage" />
+            </div>
+          </div>
+        }
+        @if (app.AuthorID != null)
+        {
+          <a href="/Author/@app.AuthorID" class="font-bold">
+            <button class="text-[@ContrastColor(app.ColorBg)] font-bold rounded-lg text-xs px-2.5 py-2 border border-[@ContrastColor(app.ColorBg)]">
+              @app.AuthorName
+            </button>
+          </a>
+        }
+      </div>
+    </section>
+    <section class="text-center my-7">
+      <p>@app.Description</p>
+    </section>
+    <section class="flex overflow-x-auto gap-x-10 h-[45vh]">
+      <img class="cursor-pointer mb-3 rounded-lg object-contain border border-gray-300"
+        src="screenshots/@Hash(app.PageURL)/mobile.webp" alt="Screenshot desktop" onclick="window.open(this.src, '_blank');">
+      <img class="cursor-pointer mb-3 rounded-lg object-contain border border-gray-300"
+        src="screenshots/@Hash(app.PageURL)/desktop.webp" alt="Screenshot desktop" onclick="window.open(this.src, '_blank');">
+    </section>
+
+    @if (NewReview != null)
+    {
+      <section>
+        <h2 class="text-xl font-bold mb-2">Leave a Review</h2>
+        <EditForm Model="@NewReview" OnValidSubmit="@HandleValidSubmit">
+          <div class="flex flex-col xl:flex-row gap-x-10 gap-y-5">
+            <div class="self-center">
+              @for (int i = 5; i >= 1; i--)
+              {
+                <div class="flex items-center gap-x-2">
+                  <input type="radio" name="rating" id="rating-@i" value="@i"
+                    @onchange="OnRatingChange"
+                    checked="@(Decimal.ToInt32(app.RatingAverage ?? 3) == i)"
+                    class="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 focus:ring-blue-600 focus:bg-blue-600"
+                  />
+                  <label for="rating-@i" class="flex">
+                    <Star Rating="@i" />
+                  </label>
+                </div>
+              }
+            </div>
+            <div class="flex-1">
+              <textarea name="comment" id="comment" rows="4"
+                @bind="@NewReview.Body"
+                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Leave a comment..."></textarea>
+            </div>
+            <div class="self-center">
+              <button class="text-[@ContrastColor(app.ColorTheme)] bg-[@app.ColorTheme] font-bold rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 border border-[@ContrastColor(app.ColorTheme)]">
+                SUBMIT
+              </button>
+            </div>
+          </div>
+        </EditForm>
+      </section>
+    }
+
+    @if (Reviews.Length != 0)
+    {
+      <section class="my-5">
+        <h2 class="text-xl font-bold mb-2">Ratings and Reviews</h2>
+        <div class="flex flex-col gap-y-4">
+          @foreach (var review in Reviews)
+          {
+            <div>
+              <span>
+                <b>@review.Ip</b>
+                <span class="ml-2">(@review.Date.ToString("d MMM yyyy"))</span>
+              </span>
+              <div class="flex">
+                <Star Rating="@review.Rating" />
+              </div>
+              <p>@review.Body</p>
+            </div>
+          }
+        </div>
+        @if (Reviews.Length == 3)
+        {
+          <div class="flex justify-center">
+            <a href="/Reviews/@AppId" class="font-bold">
+              <button class="text-[@ContrastColor(app.ColorBg)] font-bold rounded-lg text-xs px-2.5 py-2 border border-[@ContrastColor(app.ColorBg)]">
+                See all reviews
+              </button>
+            </a>
+          </div>
+        }
+      </section>
+    }
+
+    @if (SimilarApps.Length != 0)
+    {
+      <section class="mt-5">
+        <h2 class="text-xl font-bold mb-2">Similar PWAs</h2>
+        <div class="flex gap-x-5 overflow-x-auto snap-x xl:snap-mandatory">
+          @foreach (var similarApp in SimilarApps)
+          {
+            <a class="flex-none snap-start truncate w-32" href="/AppDetail/@similarApp.AppID">
+              <img class="rounded-lg w-24 h-24 object-scale-down  mx-[auto]" src="@similarApp.IconURL" alt="@similarApp.Name Icon"
+                onerror="this.src='icon-54.png';" title="@similarApp.Score" >
+              <div class="truncate text-center mt-2" title="@similarApp.Name">
+                <b>@similarApp.Name</b>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  }
+  else
+  {
+    <section role="status" class="bg-[grey] xl:p-10 p-5 animate-pulse w-full">
+      <div class="flex items-center">
+        <SkeletonImage Class="flex-none rounded-lg w-32 h-32 mr-4 object-cover" />
+        <div>
+          <div class="flex items-center">
+            <div class="h-4 mt-3 rounded-full bg-gray-700 w-[@rng.Next(250, 320)px] mb-4"></div>
+            <div class="mx-2 h-7 w-10 bg-gray-700"></div>
+          </div>
+          <div class="h-2.5 rounded-full bg-gray-700 w-[80vw] mb-4"></div>
+          <div class="flex items-center">
+            <div class="w-20 h-10 bg-gray-700 rounded-lg px-5 py-2.5 mr-2 mb-2"></div>
+            <div class="h-3 w-12 mb-2 rounded-full bg-gray-700"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="my-7 animate-pulse">
+      <div class="mx-[auto] h-2.5 rounded-full bg-gray-700 w-[80vw] mb-4"></div>
+    </section>
+    <section class="flex overflow-x-auto gap-x-10 h-[45vh] animate-pulse">
+      <SkeletonImage Class="flex-none rounded-lg w-52 mr-4 object-cover" />
+      <SkeletonImage Class="flex-none rounded-lg w-96 mr-4 object-cover" />
+    </section>
+  }
+</main>
+
+@code {
+  private Random rng = new Random();
+  private App? app { get; set; }
+  private SimilarApp[]? SimilarApps { get; set; }
+  private Review[]? Reviews { get; set; }
+  private ReviewPost NewReview { get; set; } = new ReviewPost();
+
+  protected override async Task OnInitializedAsync()
+  {
+    app = null;
+    SimilarApps = null;
+    await GetApp();
+    await GetSimilar();
+    await GetReviews();
+  }
+  protected override async Task OnParametersSetAsync()
+  {
+    app = null;
+    SimilarApps = null;
+    StateHasChanged();
+    await GetApp();
+    await GetSimilar();
+    await GetReviews();
+  }
+
+  private async Task GetApp()
+  {
+    app = await Http.GetFromJsonAsync<App>("/AppDetail/" + AppId);
+    if (app.ColorBg == null) app.ColorBg = "#d3d3d3";
+    if (app.ColorTheme == null) app.ColorTheme = "white";
+    StateHasChanged();
+  }
+  private async Task GetSimilar()
+  {
+    SimilarApps = await Http.GetFromJsonAsync<SimilarApp[]>("/SimilarApps/" + AppId);
+    StateHasChanged();
+  }
+  private async Task GetReviews()
+  {
+    Reviews = await Http.GetFromJsonAsync<Review[]>("/Reviews/" + AppId + "?limit=3");
+    StateHasChanged();
+  }
+
+  private void OnRatingChange(ChangeEventArgs e)
+  {
+    var rating = Convert.ToDecimal(e.Value);
+    NewReview.Rating = rating;
+  }
+
+  private async Task HandleValidSubmit()
+  {
+    await Http.PostAsJsonAsync("/Reviews/" + AppId, NewReview);
+    NewReview = null;
+    await GetReviews();
+  }
+
+  private static String BytesToString(long byteCount)
+  {
+    string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+    if (byteCount == 0)
+      return "0" + suf[0];
+    long bytes = Math.Abs(byteCount);
+    int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+    double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+    return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
+  }
+
+  private static String LangToCountryCode(string lang)
+  {
+    try {
+      return new RegionInfo(lang).TwoLetterISORegionName.ToLower();
+    } catch (Exception) {
+      try {
+        var c = new CultureInfo(lang);
+        var r = new RegionInfo(c.LCID);
+        return r.TwoLetterISORegionName.ToLower();
+      } catch (Exception) {
+        if (lang == "en") return "gb";
+        return null;
+      }
+    }
+  }
+}

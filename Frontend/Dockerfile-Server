@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+COPY ./Frontend.Shared/ /Frontend.Shared/
+WORKDIR /Frontend.Server
+COPY ./Frontend.Server/ .
+
+ARG CLIENT_URL="https://pwa-store.tarasa24.dev"
+RUN sed -i 's+Environment.GetEnvironmentVariable("CLIENT_URL")+"'"$CLIENT_URL"'"+g'  ./Program.cs
+RUN dotnet restore "Frontend.Server.csproj"
+RUN dotnet build "Frontend.Server.csproj" -c Release -o /build
+RUN dotnet publish "Frontend.Server.csproj" -c Release -o /publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
+WORKDIR /app
+COPY --from=build-env /publish ./
+
+EXPOSE 80 443
+ENV CONNECTION_STRING=
+ENTRYPOINT ["dotnet", "Frontend.Server.dll"]

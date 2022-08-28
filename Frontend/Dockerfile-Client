@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+COPY ./Frontend.Shared/ /Frontend.Shared/
+WORKDIR /Frontend.Client
+COPY ./Frontend.Client/ .
+
+ARG SERVER_URL="https://api.pwa-store.tarasa24.dev"
+RUN sed -i 's+Environment.GetEnvironmentVariable("SERVER_URL")+"'"$SERVER_URL"'"+g'  ./Program.cs
+RUN dotnet restore "Frontend.Client.csproj"
+RUN dotnet build "Frontend.Client.csproj" -c Release -o /build
+RUN dotnet publish "Frontend.Client.csproj" -c Release -o /publish
+
+FROM nginx:alpine AS final
+WORKDIR /usr/share/nginx/html
+EXPOSE 80
+
+COPY --from=build-env /publish/wwwroot /usr/local/webapp/nginx/html
+VOLUME /publish/wwwroot/screenshots
+COPY ./Frontend.Client/nginx.conf /etc/nginx/nginx.conf

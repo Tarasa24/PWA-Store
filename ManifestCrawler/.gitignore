@@ -1,0 +1,6 @@
+output/**
+!output/.gitkeep
+!output/pwas.tsv
+build
+node_modules
+coverage

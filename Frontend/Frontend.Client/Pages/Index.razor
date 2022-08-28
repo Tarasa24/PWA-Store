@@ -1,0 +1,229 @@
+﻿@page "/"
+@using PromotedApp = Frontend.Shared.Models.PromotedApp
+@using static Frontend.Client.Shared.HelperFunctions
+
+<PageTitle>PWA-Store</PageTitle>
+
+<main>
+  @if (appOTD != null)
+  {
+    <a href="/AppDetail/@appOTD.AppID"
+      class="block p-6 w-full lg:max-w-3xl lg:mx-[auto] bg-[@appOTD.ColorBg] text-[@ContrastColor(appOTD.ColorBg)] border border-[@ContrastColor(appOTD.ColorBg)] rounded-lg mb-2">
+      <div class="flex mb-10">
+        <div class="flex-1">
+          <span class="mb-2 text-xs tracking-tight">
+            @appOTD.Date.ToLongDateString()
+          </span>
+          <h2 class="text-4xl lg:text-6xl font-bold mt-2">
+            PWA OF THE DAY
+          </h2>
+        </div>
+        <div class="flex-2 self-center ml-5">
+          <img class="ml-[auto] rounded-lg w-32" src="@appOTD.IconURL" alt="PWA-OTD icon">
+        </div>
+      </div>
+      <div class="flex">
+        <div class="flex-none truncate w-2/3">
+          <span class="text-2xl font-bold">
+            @appOTD.Name
+          </span>
+          <p class="truncate text-xs" title="@appOTD.Description">
+            @appOTD.Description
+          </p>
+        </div>
+        <div class="flex-none self-center items-end ml-auto">
+          <a href="@appOTD.PageURL" referrerpolicy="origin-when-cross-origin">
+            <button 
+              class="text-[@ContrastColor(appOTD.ColorTheme)] bg-[@appOTD.ColorTheme] font-bold rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 border border-[@ContrastColor(appOTD.ColorTheme)]">
+              VISIT
+            </button>
+          </a>
+        </div>
+      </div>
+    </a>
+  }
+  else
+  {
+    <div class="block p-6 w-full lg:max-w-3xl lg:mx-[auto] bg-[grey] rounded-lg mb-2 animate-pulse">
+      <div class="flex mb-10">
+        <div class="flex-1">
+          <span class="mb-2 text-xs tracking-tight">
+          </span>
+          <h2 class="text-4xl lg:text-6xl font-bold mt-2">
+            PWA OF THE DAY
+          </h2>
+        </div>
+        <div class="flex-2 self-center ml-5">
+          <SkeletonImage Class="flex-none rounded-lg w-32 h-32 mr-4 object-cover" />
+        </div>
+      </div>
+      <div class="flex">
+        <div class="flex-none truncate w-2/3">
+          <div class="h-5 rounded-full bg-gray-700 w-[@rng.Next(250, 320)px] mb-4"></div>
+          <div class="h-3 mt-3 rounded-full bg-gray-700 w-[@rng.Next(200, 400)px] mb-4"></div>
+        </div>
+        <div class="flex-none self-center items-end ml-auto">
+          <a href="" referrerpolicy="origin-when-cross-origin">
+            <div class="w-20 h-10 bg-gray-700 rounded-lg px-5 py-2.5 mr-2 mb-2"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="flex flex-wrap">
+    <div class="w-full">
+      <h3 class="text-xl font-bold text-gray-900 my-4">
+        Promoted
+      </h3>
+
+      <div class="flex flex-row overflow-x-auto snap-x snap-mandatory">
+        @if (Promoted == null)
+        {
+          @for (int i = 0; i < 5; i++)
+          {
+            <div role="status" class="flex-none min-w-[250px] w-[17.5vw] mb-2 mr-6 snap-start animate-pulse">
+              <SkeletonImage Class="w-full mb-3 rounded-lg h-48" />
+              <div class="flex mb-2 items-center">
+                <SkeletonImage Class="flex-none rounded-lg w-16 h-16 object-cover" />
+                <div class="flex-auto ml-2 truncate">
+                  <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                  <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5 w-[@rng.Next(65, 100)%]"></div>
+                  <span class="flex items-center align-center">
+                    <div class="flex-1 h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[20px] mb-2.5"></div>
+                    <div class="ml-2 flex-none h-3 w-3 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                  </span>
+                </div>
+              </div>
+              <span class="sr-only">Loading...</span>
+            </div>
+          }
+        }
+        else
+        {
+          @foreach (var promoted in Promoted)
+          {
+            <a class="flex-none min-w-[250px] w-[17.5vw] mb-2 mr-6 snap-start" href="/AppDetail/@promoted.AppID">
+              <img class="mx-[auto] mb-3 rounded-lg w-[100%] object-contain"
+                src="screenshots/@Hash(promoted.PageURL)/desktop.webp" alt="@promoted.Name screenshot">
+              <div class="flex mb-2 items-center">
+                <img class="flex-none rounded-lg w-16 min-h-16 object-scale-down" src="@promoted.IconURL" alt="@promoted.Name Icon"
+                  onerror="this.src='icon-54.png';" >
+                <div class="flex-auto ml-2 truncate">
+                  <span class="text-l font-bold text-gray-900">
+                    @promoted.Name
+                  </span>
+                  <p class="text-xs text-gray-700 truncate" title="@promoted.Description">
+                    @promoted.Description
+                  </p>
+                  @if (promoted.RatingAverage != null)
+                  {
+                    <span class="flex items-center">
+                      <b class="text-s">@String.Format("{0:0.00}", promoted.RatingAverage)</b>
+                      <Star Rating="1" MaxRating="1" />
+                    </span>
+                  }
+                </div>
+              </div>
+            </a>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap mb-20">
+    <div class="w-full">
+      <h3 class="text-xl font-bold text-gray-900 my-4">
+        Popular
+      </h3>
+
+      <div
+        class="grid grid-rows-3 xl:grid-flow-col xl:auto-cols-max xl:gap-x-20 xl:overflow-x-auto xl:snap-x xl:snap-mandatory">
+        @if (Popular == null)
+        {
+          @for (int i = 0; i < 10; i++)
+          {
+            <a class="block xl:max-w-sm mb-2 mr-6 flex snap-start animate-pulse" href="/AppDetail/@i">
+              <span class="self-center text-center w-12 mr-2">@(i + 1).</span>
+              <SkeletonImage Class="flex-none rounded-lg w-[64px] h-[64px] mr-4 object-cover" />
+              <div class="flex-auto ml-2 truncate">
+                <div class="h-3 mt-2 rounded-full bg-gray-700 w-[@rng.Next(100, 210)px] mb-4"></div>
+                <div class="h-3 mt-2 rounded-full bg-gray-700 w-[@rng.Next(250, 320)px] mb-4"></div>
+              </div>
+            </a>
+          }
+        }
+        else
+        {
+          @foreach (var (popular, i) in Popular.Select((value, i) => ( value, i )))
+          {
+            <a class="flex-none block xl:max-w-sm mb-2 mr-6 flex snap-start truncate items-center" href="/AppDetail/@popular.AppID">
+              <span class="flex-none self-center text-center w-12 mr-2">@(i + 1).</span>
+              <img class="flex-none rounded-lg w-16 object-scale-down" src="@popular.IconURL" alt="PWA-OTD icon"
+                onerror="this.src='icon-54.png';">
+              <div class="flex-auto ml-2 truncate">
+                <span class="text-l font-bold text-gray-900">
+                  @popular.Name
+                </span>
+                <p class="text-xs text-gray-700 truncate" title="@popular.Description">
+                  @popular.Description
+                </p>
+                @if (popular.RatingAverage != null)
+                {
+                  <span class="flex items-center">
+                    <b class="text-s">@String.Format("{0:0.00}", popular.RatingAverage)</b>
+                    <Star Rating="1" MaxRating="1" />
+                  </span>
+                }
+              </div>
+            </a>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<footer class="fixed bottom-0 left-0 right-0 p-4 bg-gray-100 text-gray-700 mt-5 text-center">
+  <p class="text-xs text-gray-700">
+    Made with <span class="text-red-500">❤</span> by <a href="https://github.com/tarasa24"
+      class="text-blue-500">@@Tarasa24</a>
+  </p>
+  <p class="text-sm">
+    Read an article about this dataset on <a href="https://github.com/Tarasa24/PWA-Store" class="text-blue-500">GitHub</a>
+  </p>
+</footer>
+
+@code {
+  private Random rng = new Random();
+  private AppOTD appOTD { get; set; }
+  private PromotedApp[]? Promoted { get; set; }
+  private PopularApp[]? Popular { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    await GetAppOTD();
+    await GetPromoted();
+    await GetPopular();
+  }
+
+  private async Task GetAppOTD()
+  {
+    appOTD = await Http.GetFromJsonAsync<AppOTD>("/AppOTD");
+    if (appOTD.ColorBg == null) appOTD.ColorBg = "#d3d3d3";
+    if (appOTD.ColorTheme == null) appOTD.ColorTheme = "white";
+    StateHasChanged();
+  }
+  private async Task GetPromoted()
+  {
+    Promoted = await Http.GetFromJsonAsync<PromotedApp[]>("/PromotedApps");
+    StateHasChanged();
+  }
+    private async Task GetPopular()
+  {
+    Popular = await Http.GetFromJsonAsync<PopularApp[]>("/PopularApps");
+    StateHasChanged();
+  }
+}

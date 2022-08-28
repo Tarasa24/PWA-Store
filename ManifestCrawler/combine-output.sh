@@ -1,0 +1,1 @@
+cat output/*.tsv > output/pwas.tsv

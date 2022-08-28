@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": "CC-EMR"
+    },
+    {
+      "path": "ManifestFilter"
+    },
+    {
+      "path": "ManifestCrawler"
+    },
+    {
+      "path": "Frontend"
+    },
+    {
+      "path": "DB"
+    }
+  ],
+  "settings": {}
+}

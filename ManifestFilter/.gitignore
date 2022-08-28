@@ -1,0 +1,4 @@
+**.tar.gz
+output/**
+!output/.gitkeep
+ManifestFilter

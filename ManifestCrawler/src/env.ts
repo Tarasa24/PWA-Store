@@ -1,0 +1,1 @@
+export const userAgent = 'PWA_Store_Scraper/1.0'
