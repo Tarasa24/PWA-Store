@@ -35,7 +35,7 @@ describe('http.ts', () => {
       await expect(
         http.getManifestObj('https://example.com/manifest.json')
       ).rejects.toThrow(
-        'Error: Request failed with status code 404 | https://example.com/manifest.json'
+        'Request failed with status code 404 | https://example.com/manifest.json'
       )
     })
     it('should throw an error if the response is not json', async () => {
@@ -43,7 +43,7 @@ describe('http.ts', () => {
 
       await expect(
         http.getManifestObj('https://example.com/manifest.json')
-      ).rejects.toThrow('Error: Invalid JSON | https://example.com/manifest.json')
+      ).rejects.toThrow('Invalid JSON | https://example.com/manifest.json')
     })
     it('should throw an error if the response is not a manifest object', async () => {
       mock.onGet('https://example.com/manifest.json').reply(200, '{}')
@@ -51,7 +51,7 @@ describe('http.ts', () => {
       await expect(
         http.getManifestObj('https://example.com/manifest.json')
       ).rejects.toThrow(
-        'Error: Invalid manifest object | https://example.com/manifest.json'
+        'Invalid manifest object | https://example.com/manifest.json'
       )
     })
     it('should return the manifest object if the response is ok', async () => {

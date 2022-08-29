@@ -9,30 +9,28 @@ import setupCluster from '../src/setupCluster.js'
 describe('setupCluster.ts', () => {
   describe('setupCluster', () => {
     let cluster
-    let result
     beforeAll(async () => {
       Cluster.launch = jest.fn(() => {
         return {
           task: jest.fn(),
           idle: jest.fn(),
           close: jest.fn(),
-          queue: jest.fn(),
+          execute: jest.fn().mockResolvedValue(undefined as never),
         }
       }) as unknown as jest.Mocked<typeof Cluster.launch>
+      await fs.promises.writeFile('./__tests__/output/processed.txt', '')
 
-      try {
-        result = await setupCluster('./input', 1)
-      } catch (error) {
-        result = new Error(error)
-      }
+      setupCluster('./__tests__/input/', './__tests__/output', 1)
+
       cluster = (Cluster.launch as jest.Mock).mock.results[0].value
     })
 
+    afterAll(async () => {
+      await fs.promises.writeFile('./__tests__/output/processed.txt', '')
+    }),
+
     it('should be a function', () => {
       expect(setupCluster).toBeInstanceOf(Function)
-    })
-    it('shouldn\'t throw an error', () => {
-      expect(result).not.toBeInstanceOf(Error)
     })
 
     it('should create cluster instance by calling Cluster.launch once', () => {
@@ -45,12 +43,12 @@ describe('setupCluster.ts', () => {
       expect(cluster.task).toHaveBeenCalledTimes(1)
       expect(cluster.task).toHaveBeenCalledWith(expect.any(Function))
     })
-    it('should call cluster.queue(line) on each line of input files', async () => {
-      const files = await fs.promises.readdir('./input')
+    it('should call cluster.execute(line) on each line of input files', async () => {
+      const files = await fs.promises.readdir('./__tests__/input')
       let linesCounter = 0
 
       for (const file of files) {
-        const filePath = path.join('./input', file)
+        const filePath = path.join('./__tests__/input', file)
         const stat = await fs.promises.stat(filePath)
         if (!stat.isFile()) continue
         const fileStream = fs.createReadStream(filePath)
@@ -59,15 +57,16 @@ describe('setupCluster.ts', () => {
           crlfDelay: Infinity,
         })
         for await (const line of rl) {
-          expect(cluster.queue.mock.calls[linesCounter][0].url).toBe(line)
+          expect(cluster.execute.mock.calls[linesCounter][0].url).toBe(line)
           linesCounter++
         }
         rl.close()
         fileStream.close()
       }
 
-      expect(cluster.queue).toHaveBeenCalledTimes(linesCounter)
+      expect(cluster.execute).toHaveBeenCalledTimes(linesCounter)
     })
+
     it('should call cluster.idle()', () => {
       expect(cluster.idle).toHaveBeenCalledTimes(1)
     })

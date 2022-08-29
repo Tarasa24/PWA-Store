@@ -1,4 +1,4 @@
-import { getManifestObj, getRobotsTxt } from './http.js'
+import http  from './http.js'
 import { userAgent } from './env.js'
 
 import vanillaPuppeteer from 'puppeteer'
@@ -10,12 +10,13 @@ import { unescape } from 'querystring'
 
 export default async function ({
   page,
-  data: { url: pageURL },
+  data: { url: pageURL, outputDir },
   worker: { id: workerId },
 }: {
   page: vanillaPuppeteer.Page
   data: {
-    url: string
+    url: string,
+    outputDir: string,
   },
   worker: {
     id: number
@@ -28,7 +29,7 @@ export default async function ({
   const hashedPageURL = shasum.update(pageURL).digest('hex')
 
   // Get robots.txt and save crawl delay if available
-  const robots = await getRobotsTxt(baseURL + '/robots.txt')
+  const robots = await http.getRobotsTxt(baseURL + '/robots.txt')
   const crawlDelay = robots?.getCrawlDelay(userAgent) ?? 0
 
   await page.setExtraHTTPHeaders({
@@ -62,7 +63,8 @@ export default async function ({
   if (!res.ok()) throw new Error(`Page ${pageURL} could not be loaded`) // Check if page is loaded successfully
 
   // Check if page has registered a service worker, if not, throw error
-  const hasServiceWorker = await page.evaluate(async () => (await navigator.serviceWorker.getRegistrations()).length > 0)
+  const hasServiceWorker = await page.evaluate(async () => (
+    navigator && navigator.serviceWorker && (await navigator.serviceWorker.getRegistrations()).length) > 0)
   if (!hasServiceWorker) throw new Error(`Page ${pageURL} has no service worker`)
 
   // From html get path to manifest
@@ -82,19 +84,19 @@ export default async function ({
     // is relative path
     else manifestURL = manifestURL = new URL(manifestURL, pageURL).href
   }
-  const manifest = await getManifestObj(manifestURL)
+  const manifest = await http.getManifestObj(manifestURL)
 
   // Create page directory
-  if (!existsSync(`./output/${hashedPageURL}`)) await mkdir(`./output/${hashedPageURL}`)
+  if (!existsSync(`${outputDir}/${hashedPageURL}`)) await mkdir(`${outputDir}/${hashedPageURL}`)
 
   // Finally take a screenshot of the page
-  await page.screenshot({ path: `./output/${hashedPageURL}/desktop.webp`, type: 'webp' })
+  await page.screenshot({ path: `${outputDir}/${hashedPageURL}/desktop.webp`, type: 'webp' })
 
   // Resize viewport to mobile size, reload page (obey by the crawl delay), and take a screenshot
   await page.setViewport({ width: 393, height: 851 })
   await sleep(crawlDelay * 1000)
   await page.reload({ waitUntil: 'networkidle2' })
-  await page.screenshot({ path: `./output/${hashedPageURL}/mobile.webp`, type: 'webp' })
+  await page.screenshot({ path: `${outputDir}/${hashedPageURL}/mobile.webp`, type: 'webp' })
 
   // End of puppeteer routine
 
@@ -129,7 +131,7 @@ export default async function ({
     else iconURL = new URL(iconURL, manifestURL).href
   }
 
-  await appendToOutputCsv(`./output/output-${workerId}.tsv`, [
+  appendToOutputCsv(`${outputDir}/output-${workerId}.tsv`, [
     manifest.short_name ?? manifest.name,
     (manifest.description ?? description) ?? 'null',
     lang ?? 'null',

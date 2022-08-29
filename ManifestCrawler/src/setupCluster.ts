@@ -16,6 +16,7 @@ const Adblocker = AdblockerPkg as unknown as (options: any) => PuppeteerExtraPlu
 
 export default async function setupCluster(
   inputDir: string,
+  outputDir: string,
   numberOfWorkers: number
 ) {
   const puppeteer = addExtra(vanillaPuppeteer as unknown as VanillaPuppeteer)
@@ -26,7 +27,7 @@ export default async function setupCluster(
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: numberOfWorkers,
     puppeteerOptions: {
-      args: ['--lang="en-US"'],
+      args: ['--lang="en-US"', '--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/usr/bin/chromium',
     },
     monitor: !(process.env.DEBUG || process.env.NODE_ENV === 'test'),
@@ -49,10 +50,10 @@ export default async function setupCluster(
       })
 
       for await (const line of rl) {
-        cluster.execute({ url: line }).then(async () => 
-          await fs.promises.appendFile('./output/processed.txt', line + '\n')
+        cluster.execute({ url: line, outputDir }).then(async () => 
+          await fs.promises.appendFile(outputDir + '/processed.txt', line + '\n')
         ).catch(async (err) => {
-          await fs.promises.appendFile('./output/processed.txt', line + '\n')
+          await fs.promises.appendFile(outputDir + '/processed.txt', line + '\n')
           console.error(`Error crawling ${line}: ${err.message}`)
         })
       }
