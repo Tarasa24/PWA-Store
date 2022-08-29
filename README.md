@@ -11,7 +11,7 @@ The largest collection of publicly accessible Progressive Web Apps*
 
 ## Thanks and Support
 
-This project wouldn't have been possible without the amazing work of [Common Crawl](https://commoncrawl.org) and their open dataset. In the spirit of open data I am sharing my findings publicly in this very repository. [EMR-Output.txt](TBD.), [potentional-pwas.txt](ManifestCrawler/input/potentional-pwas.txt) and [pwas.tsv](ManifestCrawler/output/pwas.tsv) (**might not be complete**, dicussed below).
+This project wouldn't have been possible without the amazing work of [Common Crawl](https://commoncrawl.org) and their open dataset. In the spirit of open data I am sharing my findings publicly in this very repository. [EMR-Output.tar.gz](magnet:?xt=urn:btih:607f8d004b501f6a3790e35a0a6b7e1c4e6643c3&xt=urn:btmh:12205e368440692731a7587bee256b67fc11eecd9bb78288ded11df6c68c764bdde7&dn=CC-Manifests.tar.gz&tr=udp%3a%2f%2ftracker.openbittorrent.com%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce&tr=http%3a%2f%2ftracker.openbittorrent.com%3a80%2fannounce&tr=udp%3a%2f%2fopen.tracker.cl%3a1337%2fannounce&tr=https%3a%2f%2fopentracker.i2p.rocks%2fannounce), [potentional-pwas.txt](ManifestCrawler/input/potentional-pwas.txt) and [pwas.tsv](ManifestCrawler/output/pwas.tsv) (**might not be complete**, dicussed below).
 
 It's incredible that you are esentially able to to scan the whole web for around 140$ (cost of running AWS-EMR and the actual crawler) and couple of days time. If you find this as interesting, I highly recommend checking CommonCrawl out and [donating](https://commoncrawl.org/donate/).
 
@@ -57,7 +57,7 @@ https://example.com/manifest.json  https://example.com/pwa  https://different-do
 ...
 ```
 
-Output files were too large to possibly include in a github repo (3.4 GB gzipped) - external link TBD.
+Output files were too large to possibly include in a github repo (3.4 GB gzipped) - [magnet link](magnet:?xt=urn:btih:607f8d004b501f6a3790e35a0a6b7e1c4e6643c3&xt=urn:btmh:12205e368440692731a7587bee256b67fc11eecd9bb78288ded11df6c68c764bdde7&dn=CC-Manifests.tar.gz&tr=udp%3a%2f%2ftracker.openbittorrent.com%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce&tr=http%3a%2f%2ftracker.openbittorrent.com%3a80%2fannounce&tr=udp%3a%2f%2fopen.tracker.cl%3a1337%2fannounce&tr=https%3a%2f%2fopentracker.i2p.rocks%2fannounce)
 
 ### Filter
 
