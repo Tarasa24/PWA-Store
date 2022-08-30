@@ -133,7 +133,7 @@ export default async function ({
 
   appendToOutputCsv(`${outputDir}/output-${workerId}.tsv`, [
     manifest.short_name ?? manifest.name,
-    (manifest.description ?? description) ?? 'null',
+    (manifest.description ?? description).replace(new RegExp('\r?\n','g'), ' ') ?? 'null',
     lang ?? 'null',
     author ?? 'null',
     pageURL,
