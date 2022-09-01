@@ -68,9 +68,9 @@
     </section>
     <section class="flex overflow-x-auto gap-x-10 h-[45vh]">
       <img class="cursor-pointer mb-3 rounded-lg object-contain border border-gray-300"
-        src="screenshots/@Hash(app.PageURL)/mobile.webp" alt="Screenshot desktop" onclick="window.open(this.src, '_blank');">
+        src="https://pwa-store.eu-central-1.linodeobjects.com/@Hash(app.PageURL)/mobile.webp" alt="Screenshot desktop" onclick="window.open(this.src, '_blank');">
       <img class="cursor-pointer mb-3 rounded-lg object-contain border border-gray-300"
-        src="screenshots/@Hash(app.PageURL)/desktop.webp" alt="Screenshot desktop" onclick="window.open(this.src, '_blank');">
+        src="https://pwa-store.eu-central-1.linodeobjects.com/@Hash(app.PageURL)/desktop.webp" alt="Screenshot desktop" onclick="window.open(this.src, '_blank');">
     </section>
 
     @if (NewReview != null)
@@ -166,9 +166,9 @@
     <section role="status" class="bg-[grey] xl:p-10 p-5 animate-pulse w-full">
       <div class="flex items-center">
         <SkeletonImage Class="flex-none rounded-lg w-32 h-32 mr-4 object-cover" />
-        <div>
+        <div class="truncate">
           <div class="flex items-center">
-            <div class="h-4 mt-3 rounded-full bg-gray-700 w-[@rng.Next(250, 320)px] mb-4"></div>
+            <div class="h-4 mt-3 rounded-full bg-gray-700 w-[@rng.Next(25, 32)em] mb-4"></div>
             <div class="mx-2 h-7 w-10 bg-gray-700"></div>
           </div>
           <div class="h-2.5 rounded-full bg-gray-700 w-[80vw] mb-4"></div>
@@ -179,8 +179,8 @@
         </div>
       </div>
     </section>
-    <section class="my-7 animate-pulse">
-      <div class="mx-[auto] h-2.5 rounded-full bg-gray-700 w-[80vw] mb-4"></div>
+    <section class="my-7 animate-pulse truncate">
+      <div class="mx-[auto] h-2.5 rounded-full bg-gray-700 w-[@rng.Next(40, 80)em] mb-4"></div>
     </section>
     <section class="flex overflow-x-auto gap-x-10 h-[45vh] animate-pulse">
       <SkeletonImage Class="flex-none rounded-lg w-52 mr-4 object-cover" />
@@ -201,8 +201,8 @@
     app = null;
     SimilarApps = null;
     await GetApp();
-    await GetSimilar();
-    await GetReviews();
+    GetReviews();
+    GetSimilar();
   }
   protected override async Task OnParametersSetAsync()
   {
@@ -210,8 +210,8 @@
     SimilarApps = null;
     StateHasChanged();
     await GetApp();
-    await GetSimilar();
-    await GetReviews();
+    GetReviews();
+    GetSimilar();
   }
 
   private async Task GetApp()

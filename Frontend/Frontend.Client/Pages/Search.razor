@@ -1,6 +1,6 @@
 @page "/Search"
 
-<main class="">
+<main>
   @if (apps != null)
   {
     @foreach (var app in apps)
@@ -31,14 +31,14 @@
   {
     @for (int i = 0; i < 15; i++)
     {
-      <a class="block xl:max-w-sm mb-2 mr-6 flex snap-start animate-pulse" href="/AppDetail/@i">
+      <a class="block mb-2 mr-6 flex snap-start animate-pulse" href="/AppDetail/@i">
         <span class="self-center w-12 mr-2">
           <div class="w-4 h-3 mx-[auto] rounded-full bg-gray-700"></div>
         </span>
         <SkeletonImage Class="flex-none rounded-lg w-[64px] h-[64px] mr-4 object-cover" />
         <div class="flex-auto ml-2 truncate">
-          <div class="h-3 mt-2 rounded-full bg-gray-700 w-[@rng.Next(100, 210)px] mb-4"></div>
-          <div class="h-3 mt-2 rounded-full bg-gray-700 w-[@rng.Next(250, 320)px] mb-4"></div>
+          <div class="h-3 mt-2 rounded-full bg-gray-700 w-[@rng.Next(10, 21)em] mb-4"></div>
+          <div class="h-3 mt-2 rounded-full bg-gray-700 w-[@rng.Next(25, 32)em] mb-4"></div>
         </div>
       </a>
     }

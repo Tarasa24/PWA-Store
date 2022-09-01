@@ -6,9 +6,10 @@ SELECT
   app."iconURL",
   review.average AS "reviewAverage"
 FROM (
-    SELECT *, ts_rank_cd(app.tsv_search, to_tsquery(replace($1, ' ', '|'))) AS score
+    SELECT "appID", name, description, "iconURL", ts_rank_cd(app.tsv_search, to_tsquery(replace($1, ' ', '|'))) AS score
     FROM core."App" app
 ) app
 LEFT JOIN (SELECT "appID", avg(rating) AS average FROM core."Review" GROUP BY "appID") review ON app."appID" = review."appID"
 WHERE score > 0
-ORDER BY score DESC;
+ORDER BY score DESC
+LIMIT 300

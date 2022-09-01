@@ -105,7 +105,7 @@
           {
             <a class="flex-none min-w-[250px] w-[17.5vw] mb-2 mr-6 snap-start" href="/AppDetail/@promoted.AppID">
               <img class="mx-[auto] mb-3 rounded-lg w-[100%] object-contain"
-                src="screenshots/@Hash(promoted.PageURL)/desktop.webp" alt="@promoted.Name screenshot">
+                src="https://pwa-store.eu-central-1.linodeobjects.com/@Hash(promoted.PageURL)/desktop.webp" alt="@promoted.Name screenshot">
               <div class="flex mb-2 items-center">
                 <img class="flex-none rounded-lg w-16 min-h-16 object-scale-down" src="@promoted.IconURL" alt="@promoted.Name Icon"
                   onerror="this.src='icon-54.png';" >
@@ -204,9 +204,9 @@
 
   protected override async Task OnInitializedAsync()
   {
-    await GetAppOTD();
-    await GetPromoted();
-    await GetPopular();
+    GetAppOTD();
+    GetPromoted();
+    GetPopular();
   }
 
   private async Task GetAppOTD()

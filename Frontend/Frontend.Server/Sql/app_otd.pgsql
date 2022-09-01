@@ -8,8 +8,9 @@ SELECT
   trim("colorBg"),
   trim("colorTheme")
 FROM core."App"
+ORDER BY "appID"
 LIMIT 1
 OFFSET MOD(
   ABS(hashtextextended(CAST(CURRENT_DATE AS TEXT), 0)),
-  CAST((SELECT reltuples AS estimate FROM pg_class WHERE relname = 'App') AS BIGINT)
+  CAST((SELECT count("appID") FROM core."App") AS BIGINT)
 )
