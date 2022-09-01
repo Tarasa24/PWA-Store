@@ -3,7 +3,7 @@ COPY ./Frontend.Shared/ /Frontend.Shared/
 WORKDIR /Frontend.Server
 COPY ./Frontend.Server/ .
 
-ARG CLIENT_URL="https://pwa-store.tarasa24.dev"
+ARG CLIENT_URL="https://pwastore.tarasa24.dev"
 RUN sed -i 's+Environment.GetEnvironmentVariable("CLIENT_URL")+"'"$CLIENT_URL"'"+g'  ./Program.cs
 RUN dotnet restore "Frontend.Server.csproj"
 RUN dotnet build "Frontend.Server.csproj" -c Release -o /build
