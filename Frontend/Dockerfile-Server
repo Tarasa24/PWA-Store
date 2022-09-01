@@ -12,6 +12,7 @@ RUN dotnet publish "Frontend.Server.csproj" -c Release -o /publish
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
 WORKDIR /app
 COPY --from=build-env /publish ./
+COPY ./Frontend.Server/Sql/ ./Sql/
 
 EXPOSE 80 443
 ENV CONNECTION_STRING=
