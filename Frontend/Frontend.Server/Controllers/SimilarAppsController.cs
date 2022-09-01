@@ -16,8 +16,9 @@ public class SimilarAppsController : ControllerBase
     await using var conn = new NpgsqlConnection(connString);
     await conn.OpenAsync();
 
-    await using var cmd = new NpgsqlCommand(
-      System.IO.File.ReadAllText("./Sql/similar_apps_by_id.pgsql"),
+    List<string> keywords = new List<string>();
+    await using var cmd1 = new NpgsqlCommand(
+      System.IO.File.ReadAllText("./Sql/get_keywords_by_id.pgsql"),
     conn)
     {
       Parameters =
@@ -25,7 +26,27 @@ public class SimilarAppsController : ControllerBase
           new() { Value = appID, NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Integer },
       }
     };
-    await using (var reader = await cmd.ExecuteReaderAsync())
+    await using (var reader = await cmd1.ExecuteReaderAsync())
+    {
+      while (await reader.ReadAsync())
+      {
+        keywords.Add(reader.GetString(0));
+      }
+    }
+
+
+    var rng = new Random();
+    await using var cmd2 = new NpgsqlCommand(
+      System.IO.File.ReadAllText("./Sql/similar_apps_by_id.pgsql"),
+    conn)
+    {
+      Parameters =
+      {
+        new() { Value = string.Join("|", keywords.OrderBy(x => rng.Next()).Take(5))  , NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Text },
+        new() { Value = appID, NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Integer },
+      }
+    };
+    await using (var reader = await cmd2.ExecuteReaderAsync())
     {
       while (await reader.ReadAsync())
       {
