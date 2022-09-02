@@ -11,7 +11,7 @@ The largest collection of publicly accessible Progressive Web Apps*
 
 ## Thanks and Support
 
-This project wouldn't have been possible without the amazing work of [Common Crawl](https://commoncrawl.org) and their open dataset. In the spirit of open data I am sharing my findings publicly in this very repository. [EMR-Output.tar.gz](CC-Manifests.tar.gz.torrent) and [pwas.tsv](ManifestCrawler/output/pwas.tsv) (**might not be complete**, dicussed below).
+This project wouldn't have been possible without the amazing work of [Common Crawl](https://commoncrawl.org) and their open dataset. In the spirit of open data I am sharing my findings publicly in this very repository. [EMR-Output.tar.gz](CC-Manifests.tar.gz.torrent), [potentional-pwas.txt](ManifestCrawler/input/potentional-pwas.txt) and [pwas.tsv](ManifestCrawler/output/pwas.tsv) (**might not be complete**, dicussed below).
 
 It's incredible that you are esentially able to to scan the whole web for around 140$ (cost of running AWS-EMR and the actual crawler) and couple of days time. If you find this as interesting, I highly recommend checking CommonCrawl out and [donating](https://commoncrawl.org/donate/).
 
@@ -33,8 +33,9 @@ Secondly touching on database design with [Postgres](https://www.postgresql.org/
 | Avg. number of pages poiting to a distinct manifest                        | ~47.9                   |
 | Ratio of basic pages to ones with a linked manifest                        | 1 to 11                 |
 | Distinct websites with [valid PWA manifest](https://web.dev/add-manifest/) | **615 510**             |
-| Valid PWAs (dataset size)                                                  | TBD.                    |
-| Ratio of PWAs to basic pages on the web                                    | TBD.                    |
+| Valid PWAs (dataset size)                                                  | **219 187**             |
+| Crawl fail (no web worker, timeouts, DNS not resolving, TLS errors)        | ~64.4%                  |
+| Ratio of PWAs to basic pages on the web                                    | 1 to 14 143             |
 
 According to _[Common Crawl June/July 2022](https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-27/index.html) -> Map-Reduce -> Filter -> Hand edits -> Crawler_ pipeline.
 
@@ -73,7 +74,9 @@ For this I used [puppeteer](https://pptr.dev/) as I was already comfortable work
 
 Again, running this job on my tiny Intel NUC (i3-3217U) I was able to only run 4 cluster workers and averaged around 0.3 pages per second. Therefore, the whole job would take around 20 days to complete. So this time around, I gave [Linode](https://www.linode.com/) a go with their dedicated 32 core CPU linode. And as you can imagine, this substantially decreased the time necessary to complete, to around 2 days, averaging 3.4 pages per second. The final cost of the crawl was around 50$.
 
-The result of crawling is this singular [.tsv file](ManifestCrawler/output/pwas.tsv). **Admittedly, this dataset might not be complete** as multiple domains started refusing my connections, probably due to excessive crawling, although my crawler obeys robots.txt, including the crawl-delay property. Ultimately, as this is just a hobby project, I couldn't feasibly deploy a whole cluster of IPs to perform my crawl and therefore get around restrictions imposed by the web servers. If you are interested in having a go with your own crawling solution, feel free to refer to my distilled list of [over 600k potentional PWAs](ManifestCrawler/input/potentional-pwas.txt).
+#### Incomplete dataset
+
+The result of crawling is this singular [.tsv file](ManifestCrawler/output/pwas.tsv). **Admittedly, this dataset might not be complete** as during the job many pages started timing out, probably due to excessive crawling, although my crawler obeys robots.txt, including the crawl-delay property. Ultimately, as this is just a hobby project, I couldn't feasibly deploy a whole cluster of IPs to perform my crawl and therefore get around restrictions imposed by the web servers. If you are interested in having a go with your own crawling solution, feel free to refer to my distilled list of [over 600k potentional PWAs](ManifestCrawler/input/potentional-pwas.txt).
 
 ### Frontend
 
